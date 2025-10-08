@@ -14,6 +14,9 @@ public class Player : MonoBehaviour
      
      private bool facingRight = true;
      private bool isGrounded;
+     private bool canJump = true;
+     private bool canMove = true;
+     
      [SerializeField] float groundDistance = 1.4f;
      [SerializeField] LayerMask whatIsGround;
 
@@ -40,7 +43,14 @@ public class Player : MonoBehaviour
     }
     void HandleMovement()
     {
-        rigidbody2D.velocity = new Vector2(inputX * moveSpeed, rigidbody2D.velocity.y);
+        if (canMove)
+        {
+            rigidbody2D.velocity = new Vector2(inputX * moveSpeed, rigidbody2D.velocity.y);
+        }
+        else
+        {
+            rigidbody2D.velocity = new Vector2(0, rigidbody2D.velocity.y);
+        }
     }
 
     private void HandleAnimations()
@@ -70,7 +80,12 @@ public class Player : MonoBehaviour
 
     private void TryToAttack()
     {
-        animator.SetTrigger("attack");
+        if (isGrounded)
+        {
+            
+            animator.SetTrigger("attack");
+            
+        }
     }
 
     void HandleFlip()
@@ -96,7 +111,7 @@ public class Player : MonoBehaviour
     }
     void TryToJump()
     {
-        if (isGrounded)
+        if (isGrounded && canJump)
         {
             rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, jumpForce);
         }
@@ -105,5 +120,11 @@ public class Player : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position,transform.position + new Vector3(0,groundDistance));
+    }
+
+    public void EnableMovementAndJump(bool enable)
+    {
+        canMove = enable;
+        canJump = enable;
     }
 }
